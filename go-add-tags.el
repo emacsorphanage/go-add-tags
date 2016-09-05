@@ -65,12 +65,13 @@
 
 (defun go-add-tags--insert-tags (tags begin end conv-func)
   (save-excursion
-    (let ((end-line (line-number-at-pos end)))
+    (let ((end-marker (make-marker)))
+      (set-marker end-marker end)
       (goto-char begin)
       (goto-char (line-beginning-position))
-      (while (and (<= (line-number-at-pos) end-line) (not (eobp)))
-        (let ((bound (line-end-position)))
-          (when (re-search-forward "^\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)" nil bound)
+      (while (and (<= (point) end-marker) (not (eobp)))
+        (let ((bound (min end-marker (line-end-position))))
+          (when (re-search-forward "^\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)" bound t)
             (goto-char (min bound (match-end 2)))
             (let* ((field (funcall conv-func (match-string-no-properties 1)))
                    (tag (go-add-tags--tag-string tags field))
