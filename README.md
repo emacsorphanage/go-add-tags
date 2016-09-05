@@ -6,7 +6,9 @@ Add field tags for struct fields. This package is inspired by `GoAddTags` of [vi
 
 ##### `go-add-tags`
 
-Insert tag at current line. If region is enabled, then tags are inserted in lines in region. And `current-prefix-key` is specified, then you can choose field convertion function.
+Insert tag at current line. You can input multiple tags at once by comma, like `json,yaml`.
+If region is enabled, then tags are inserted in lines in region. And `current-prefix-key` is specified,
+then you can choose field convertion function.
 
 ## Customization
 
