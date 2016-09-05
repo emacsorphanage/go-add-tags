@@ -105,7 +105,8 @@
            (if current-prefix-arg
                (go-add-tags--read-convertion-function)
              (assoc-default go-add-tags-conversion go-add-tags--convertion-function))))
-      (go-add-tags--insert-tags tags begin end conv-func))))
+      (save-excursion
+        (go-add-tags--insert-tags tags begin end conv-func)))))
 
 (provide 'go-add-tags)
 
