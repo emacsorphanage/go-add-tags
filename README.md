@@ -1,4 +1,4 @@
-# go-add-tags.el
+# go-add-tags.el [![travis badge][travis-badge]][travis-link]
 
 Add field tags for struct fields. This package is inspired by `GoAddTags` of [vim-go](https://github.com/fatih/vim-go).
 
@@ -20,3 +20,6 @@ How to convert filed in tag from field name.
 - `lower-camel-case`
 - `upper-camel-case`
 - `original`
+
+[travis-badge]: https://travis-ci.org/syohex/emacs-go-add-tags.svg
+[travis-link]: https://travis-ci.org/syohex/emacs-go-add-tags
