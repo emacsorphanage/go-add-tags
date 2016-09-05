@@ -2,6 +2,10 @@
 
 Add field tags for struct fields. This package is inspired by `GoAddTags` of [vim-go](https://github.com/fatih/vim-go).
 
+## Screencast
+
+![go-add-tags](image/go-add-tags.gif)
+
 ## Interfaces
 
 ##### `go-add-tags`
