@@ -33,14 +33,14 @@
   "Add field tag for struct fields."
   :group 'go)
 
-(defcustom go-add-tags-conversion 'snake-case
+(defcustom go-add-tags-style 'snake-case
   "How to convert field in tag from field name."
   :type '(choice (const :tag "snake_case" snake-case)
                  (const :tag "camelCase" lower-camel-case)
                  (const :tag "UpperCamelCase" upper-camel-case)
                  (const :tag "Use original field name" original)))
 
-(defvar go-add-tags--convertion-function
+(defvar go-add-tags--style-functions
   '((snake-case . s-snake-case)
     (camel-case . s-lower-camel-case)
     (upper-camel-case . s-upper-camel-case)))
@@ -83,7 +83,7 @@
         (forward-line 1)))))
 
 (defun go-add-tags--style-candidates (field)
-  (cl-loop for (_ . func) in go-add-tags--convertion-function
+  (cl-loop for (_ . func) in go-add-tags--style-functions
            collect (cons (funcall func field) func) into candidates
            finally return (append candidates (list (cons "Original" #'identity)))))
 
@@ -94,7 +94,7 @@
            finally
            return (mapconcat #'identity parts " ")))
 
-(defun go-add-tags--read-convertion-function ()
+(defun go-add-tags--read-style-function ()
   (let* ((candidates (go-add-tags--style-candidates "FieldName"))
          (len (length candidates))
          (prompt (go-add-tags--prompt (mapcar #'car candidates)))
@@ -118,8 +118,8 @@
     (or (and (use-region-p) (region-beginning)) (line-beginning-position))
     (or (and (use-region-p) (region-end)) (line-end-position))
     (if current-prefix-arg
-        (go-add-tags--read-convertion-function)
-      (assoc-default go-add-tags-conversion go-add-tags--convertion-function))))
+        (go-add-tags--read-style-function)
+      (assoc-default go-add-tags-style go-add-tags--style-functions))))
   (deactivate-mark)
   (let ((inside-struct-p (go-add-tags--inside-struct-p begin)))
     (unless inside-struct-p
