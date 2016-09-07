@@ -43,8 +43,7 @@
 (defvar go-add-tags--convertion-function
   '((snake-case . s-snake-case)
     (camel-case . s-lower-camel-case)
-    (upper-camel-case . s-upper-camel-case)
-    (original . identity)))
+    (upper-camel-case . s-upper-camel-case)))
 
 (defun go-add-tags--inside-struct-p (begin)
   (save-excursion
@@ -83,13 +82,33 @@
               (insert " " tag))))
         (forward-line 1)))))
 
+(defun go-add-tags--style-candidates (field)
+  (cl-loop for (_ . func) in go-add-tags--convertion-function
+           collect (cons (funcall func field) func) into candidates
+           finally return (append candidates (list (cons "Original" #'identity)))))
+
+(defun go-add-tags--prompt (candidates)
+  (cl-loop for cand in candidates
+           for i = 1 then (1+ i)
+           collect (format "[%d] %s" i cand) into parts
+           finally
+           return (mapconcat #'identity parts " ")))
+
 (defun go-add-tags--read-convertion-function ()
-  (let* ((candidates (mapcar #'car go-add-tags--convertion-function))
-         (convertion (completing-read "How to convert: " candidates nil t)))
-    (assoc-default (intern convertion) go-add-tags--convertion-function)))
+  (let* ((candidates (go-add-tags--style-candidates "FieldName"))
+         (len (length candidates))
+         (prompt (go-add-tags--prompt (mapcar #'car candidates)))
+         ret finish)
+    (while (not finish)
+      (let* ((input (read-char prompt))
+             (num (- input ?0)))
+        (when (and (<= 1 num) (<= num len))
+          (setq finish t)
+          (setq ret (cdr (nth (1- num) candidates))))))
+    ret))
 
 ;;;###autoload
-(defun go-add-tags (tags begin end)
+(defun go-add-tags (tags begin end conv-func)
   (interactive
    (list
     (let ((tags (completing-read "Tags: " '(json yaml toml))))
@@ -97,17 +116,16 @@
           (mapcar #'s-trim (s-split "," tags t))
         (list tags)))
     (or (and (use-region-p) (region-beginning)) (line-beginning-position))
-    (or (and (use-region-p) (region-end)) (line-end-position))))
+    (or (and (use-region-p) (region-end)) (line-end-position))
+    (if current-prefix-arg
+        (go-add-tags--read-convertion-function)
+      (assoc-default go-add-tags-conversion go-add-tags--convertion-function))))
   (deactivate-mark)
   (let ((inside-struct-p (go-add-tags--inside-struct-p begin)))
     (unless inside-struct-p
       (error "Here is not struct"))
-    (let ((conv-func
-           (if current-prefix-arg
-               (go-add-tags--read-convertion-function)
-             (assoc-default go-add-tags-conversion go-add-tags--convertion-function))))
-      (save-excursion
-        (go-add-tags--insert-tags tags begin end conv-func)))))
+    (save-excursion
+      (go-add-tags--insert-tags tags begin end (or conv-func #'identity)))))
 
 (provide 'go-add-tags)
 
