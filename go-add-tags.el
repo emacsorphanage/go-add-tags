@@ -109,6 +109,7 @@
 
 ;;;###autoload
 (defun go-add-tags (tags begin end conv-func)
+  "Add field tags for struct fields."
   (interactive
    (list
     (let ((tags (completing-read "Tags: " '(json yaml toml))))
