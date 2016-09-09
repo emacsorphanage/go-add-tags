@@ -1,4 +1,7 @@
 Revision history for go-add-tags.el
 
+Version 0.02  2016/09/09 syohex
+  - Fix dependency packages
+
 Version 0.01  2016/09/09 syohex
   - init version
