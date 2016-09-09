@@ -6,6 +6,14 @@ Add field tags for struct fields. This package is inspired by `GoAddTags` of [vi
 
 ![go-add-tags](image/go-add-tags.gif)
 
+## Installation
+
+`go-add-tags` is available on [MELPA](https://melpa.org/) and [MELPA stable](https://stable.melpa.org/)
+
+You can install `go-add-tags` with the following command.
+
+<kbd>M-x package-install [RET] go-add-tags [RET]</kbd>
+
 ## Interfaces
 
 ##### `go-add-tags`
