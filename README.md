@@ -1,4 +1,4 @@
-# go-add-tags.el [![travis badge][travis-badge]][travis-link]
+# go-add-tags.el [![travis badge][travis-badge]][travis-link] [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
 
 Add field tags for struct fields. This package is inspired by `GoAddTags` of [vim-go](https://github.com/fatih/vim-go).
 
@@ -37,3 +37,7 @@ How to convert field in tag from field name.
 
 [travis-badge]: https://travis-ci.org/syohex/emacs-go-add-tags.svg
 [travis-link]: https://travis-ci.org/syohex/emacs-go-add-tags
+[melpa-link]: https://melpa.org/#/go-add-tags
+[melpa-stable-link]: https://stable.melpa.org/#/go-add-tags
+[melpa-badge]: https://melpa.org/packages/go-add-tags-badge.svg
+[melpa-stable-badge]: https://stable.melpa.org/packages/go-add-tags-badge.svg
