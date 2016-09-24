@@ -63,6 +63,17 @@
   (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
     (string-match-p "`[^`]+`" line)))
 
+(defun go-add-tags--insert-tag (tags field)
+  (dolist (tag tags)
+    (save-excursion
+      (let ((re (concat tag ":\"[^\"]+\""))
+            (tag-field (concat tag ":" "\"" field "\"")))
+        (if (re-search-forward re (line-end-position) t)
+            (replace-match tag-field)
+          (search-forward "`" (line-end-position) t 2)
+          (backward-char 1)
+          (insert " " tag-field))))))
+
 (defun go-add-tags--insert-tags (tags begin end conv-func)
   (save-excursion
     (let ((end-marker (make-marker)))
@@ -74,13 +85,10 @@
           (when (re-search-forward "^\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)" bound t)
             (goto-char (min bound (match-end 2)))
             (let* ((field (funcall conv-func (match-string-no-properties 1)))
-                   (tag (go-add-tags--tag-string tags field))
                    (exist-p (go-add-tags--tag-exist-p)))
               (if (not exist-p)
-                  (setq tag (format "`%s`" tag))
-                (search-forward "`" (line-end-position) t 2)
-                (backward-char 1))
-              (insert " " tag))))
+                  (insert (format " `%s`" (go-add-tags--tag-string tags field)))
+                (go-add-tags--insert-tag tags field)))))
         (forward-line 1)))))
 
 (defun go-add-tags--style-candidates (field)

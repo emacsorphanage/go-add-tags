@@ -76,4 +76,25 @@ type Foo struct {
     (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
       (should (s-contains? "`yaml:\"apple\" json:\"apple\"`" line)))))
 
+(ert-deftest replace-tags ()
+  "internal function go-add-tags--insert-tags in replacing case"
+  (with-go-temp-buffer
+    "
+type Foo struct {
+        BarBaz string `json:\"barbaz\"`
+        AppleOrange  Fruit  `yaml:\"apple_orange\" json:\"apple_orange\"`
+}
+"
+    (search-forward "BarBaz")
+    (go-add-tags--insert-tags
+     '("json") (line-beginning-position) (line-end-position) #'s-lower-camel-case)
+    (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+      (should (s-contains? "`json:\"barBaz\"`" line)))
+
+    (forward-line +1)
+    (go-add-tags--insert-tags
+     '("json" "yaml") (line-beginning-position) (line-end-position) #'s-snake-case)
+    (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+      (should (s-contains? "`yaml:\"apple_orange\" json:\"apple_orange\"`" line)))))
+
 ;;; test.el ends here
