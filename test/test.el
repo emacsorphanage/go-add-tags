@@ -97,4 +97,32 @@ type Foo struct {
     (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
       (should (s-contains? "`yaml:\"apple_orange\" json:\"apple_orange\"`" line)))))
 
+(ert-deftest nested-tag ()
+  "Insert tag for nested struct
+https://github.com/syohex/emacs-go-add-tags/issues/4"
+  (with-go-temp-buffer
+    "
+type APIErr struct {
+    Message string
+    Errors  []struct {
+        Resource string
+        Code     string
+    }
+}
+"
+    (let ((expected "
+type APIErr struct {
+    Message string `json:\"message\"`
+    Errors  []struct {
+        Resource string `json:\"resource\"`
+        Code     string `json:\"code\"`
+    } `json:\"errors\"`
+}
+"))
+
+      (forward-line 1)
+      (go-add-tags--insert-tags
+       '("json") (point) (point-max) #'s-lower-camel-case)
+      (should (string= (buffer-string) expected)))))
+
 ;;; test.el ends here
