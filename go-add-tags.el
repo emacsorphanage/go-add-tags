@@ -74,7 +74,21 @@
           (backward-char 1)
           (insert " " tag-field))))))
 
-(defun go-add-tags--insert-tags (tags begin end conv-func)
+(defun go-add-tags--overwrite-or-insert-tag (tags field conv-fn)
+  (let* ((prop (funcall conv-fn field))
+         (exist-p (go-add-tags--tag-exist-p)))
+    (if (not exist-p)
+        (insert (format " `%s`" (go-add-tags--tag-string tags prop)))
+      (go-add-tags--insert-tag tags prop))))
+
+(defun go-add-tags--struct-name ()
+  (save-excursion
+    (when (ignore-errors (backward-sexp 1) t)
+      (back-to-indentation)
+      (when (looking-at "\\(\\S-+\\)\\s-+\\(?:\\[\\]\\)?struct\\s-*")
+        (match-string-no-properties 1)))))
+
+(defun go-add-tags--insert-tags (tags begin end conv-fn)
   (save-excursion
     (let ((end-marker (make-marker)))
       (set-marker end-marker end)
@@ -82,13 +96,19 @@
       (goto-char (line-beginning-position))
       (while (and (<= (point) end-marker) (not (eobp)))
         (let ((bound (min end-marker (line-end-position))))
-          (when (re-search-forward "^\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)" bound t)
-            (goto-char (min bound (match-end 2)))
-            (let* ((field (funcall conv-func (match-string-no-properties 1)))
-                   (exist-p (go-add-tags--tag-exist-p)))
-              (if (not exist-p)
-                  (insert (format " `%s`" (go-add-tags--tag-string tags field)))
-                (go-add-tags--insert-tag tags field)))))
+          (cond ((re-search-forward "^\\s-*\\(\\S-+\\)\\s-+\\(\\S-+\\)" bound t)
+                 (let ((field (match-string-no-properties 1))
+                       (type-end (match-end 2))
+                       (line (buffer-substring-no-properties
+                              (line-beginning-position) (line-end-position))))
+                   (unless (string-match-p "struct\\s-*+{" line)
+                     (goto-char (min bound type-end))
+                     (go-add-tags--overwrite-or-insert-tag tags field conv-fn))))
+                ((re-search-forward "^\\s-*}" bound t)
+                 (unless (zerop (current-indentation))
+                   (let ((field (go-add-tags--struct-name)))
+                     (when field
+                       (go-add-tags--overwrite-or-insert-tag tags field conv-fn)))))))
         (forward-line 1)))))
 
 (defun go-add-tags--style-candidates (field)
@@ -117,7 +137,7 @@
     ret))
 
 ;;;###autoload
-(defun go-add-tags (tags begin end conv-func)
+(defun go-add-tags (tags begin end conv-fn)
   "Add field tags for struct fields."
   (interactive
    (list
@@ -135,7 +155,7 @@
     (unless inside-struct-p
       (error "Here is not struct"))
     (save-excursion
-      (go-add-tags--insert-tags tags begin end (or conv-func #'identity)))))
+      (go-add-tags--insert-tags tags begin end (or conv-fn #'identity)))))
 
 (provide 'go-add-tags)
 
