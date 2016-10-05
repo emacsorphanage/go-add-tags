@@ -1,5 +1,9 @@
 Revision history for go-add-tags.el
 
+Version 0.03 2016/10/06 syohex
+  - Support nested struct(#5)
+  - Implement replacing tag feature(#3)
+
 Version 0.02  2016/09/09 syohex
   - Fix dependency packages
 
