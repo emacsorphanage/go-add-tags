@@ -4,7 +4,7 @@ Add field tags for struct fields. This package is inspired by `GoAddTags` of [vi
 
 ## Screencast
 
-![Demonstration of go-add-tags. Insert tags for struct fields with M-x go-add-tags](image/go-add-tags.gif)
+![Screencast of go-add-tags. Insert tags for struct fields with M-x go-add-tags](image/go-add-tags.gif)
 
 ## Installation
 
