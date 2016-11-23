@@ -1,5 +1,8 @@
 Revision history for go-add-tags.el
 
+Version 0.04 2016/11/23 syohex
+  - Drop Emacs 24.1 and 24.2 support
+
 Version 0.03 2016/10/06 syohex
   - Support nested struct(#5)
   - Implement replacing tag feature(#3)
