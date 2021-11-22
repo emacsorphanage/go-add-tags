@@ -147,10 +147,7 @@
   "Add field tags for struct fields."
   (interactive
    (list
-    (let ((tags (completing-read "Tags: " go-add-tags-fields-tags)))
-      (if (string-match-p "," tags)
-          (mapcar #'s-trim (s-split "," tags t))
-        (list tags)))
+    (completing-read-multiple "Tags: " go-add-tags-fields-tags)
     (or (and (use-region-p) (region-beginning)) (line-beginning-position))
     (or (and (use-region-p) (region-end)) (line-end-position))
     (if current-prefix-arg
