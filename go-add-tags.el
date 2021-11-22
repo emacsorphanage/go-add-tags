@@ -42,6 +42,11 @@
                  (const :tag "UpperCamelCase" upper-camel-case)
                  (const :tag "Use original field name" original)))
 
+(defcustom go-add-tags-fields-tags
+  '("json" "yaml" "toml" "datastore" "mapstructure")
+  "List of field tags offered as completion candidates."
+  :type '(repeat (symbol :tag "Field")))
+
 (defvar go-add-tags--style-functions
   '((snake-case . s-snake-case)
     (camel-case . s-lower-camel-case)
@@ -142,8 +147,7 @@
   "Add field tags for struct fields."
   (interactive
    (list
-    (let ((tags (completing-read "Tags: "
-				 '(json yaml toml datastore mapstructure))))
+    (let ((tags (completing-read "Tags: " go-add-tags-fields-tags)))
       (if (string-match-p "," tags)
           (mapcar #'s-trim (s-split "," tags t))
         (list tags)))
